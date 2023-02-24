@@ -4,8 +4,8 @@ set -e
 # echo $PATH
 # set 
 export PGDATA=/data
-[ -d $PGDATA ] && s=0 || s=1
-mkdir -p $PGDATA
+[ -e $PGDATA/postgresql.conf ] && s=0 || s=1
+#mkdir -p $PGDATA
 # ls -l /data
 /usr/local/bin/docker-entrypoint.sh postgres &
 POSTGRES_PID=$!
@@ -29,7 +29,8 @@ done
 if [ "$s" == "1" ] ; then
 echo "SETTING CONFIG"
 cat >> $PGDATA/postgresql.conf << EOF
-    max_prepared_transactions=100
+max_prepared_transactions=100
+shared_preload_libraries='timescaledb,pg_stat_statements,pg_auth_mon,timescaledb_cloudutils'
 EOF
 
 cat >> $PGDATA/pg_hba.conf << EOF

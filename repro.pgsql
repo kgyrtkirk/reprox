@@ -16,3 +16,12 @@ select count(device), count(*)
 where time > '2018-01-01 10:11:00'::timestamptz
 and time<  '2018-03-11 10:11:00'::timestamptz
  and device != 1;
+
+
+
+-- create extension pg_stat_statements;
+-- create extension pg_auth_mon;
+-- create extension timescaledb_cloudutils;
+
+-- create extension auto_explain;
+-- create extension tsdb_admin;

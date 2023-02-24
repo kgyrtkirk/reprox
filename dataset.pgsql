@@ -2,6 +2,13 @@
 \set DATA_NODE_2 tsdb _2
 \set DATA_NODE_3 tsdb _3
 
+
+create extension pg_stat_statements;
+create extension pg_auth_mon;
+create extension timescaledb_cloudutils;
+
+
+
 -- ir include/remote_exec.sql
 CREATE SCHEMA IF NOT EXISTS test;
 GRANT USAGE ON SCHEMA test TO PUBLIC;
