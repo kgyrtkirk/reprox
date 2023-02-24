@@ -16,6 +16,7 @@ if [ "$s" == "1" ] ; then
 echo "@ SETTING CONFIG"
 cat >> $PGDATA/postgresql.conf << EOF
     max_prepared_transactions=100
+	autovacuum = off
 EOF
 
 cat >> $PGDATA/pg_hba.conf << EOF
