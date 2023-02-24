@@ -1,0 +1,15 @@
+#!/bin/bash --login
+set -e
+
+[ "$#" -lt 1 ] && echo "usage: $0 dump" && exit 1
+
+psql -a -v ON_ERROR_STOP=1 tsdb <<EOF
+CREATE EXTENSION IF NOT EXISTS timescaledb;
+ SELECT timescaledb_pre_restore();
+EOF
+
+pg_restore -d tsdb "$@"
+
+psql -a -v ON_ERROR_STOP=1 tsdb <<EOF
+ SELECT timescaledb_post_restore();
+EOF
