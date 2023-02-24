@@ -1,0 +1,15 @@
+#!/bin/bash --login
+set -e
+
+createdb tsdb
+
+psql -b -v ON_ERROR_STOP=1 tsdb <<EOF
+CREATE EXTENSION IF NOT EXISTS timescaledb;
+ SELECT timescaledb_pre_restore();
+EOF
+
+pg_restore -Fc -d tsdb /backup.pg
+
+psql -b -v ON_ERROR_STOP=1 tsdb <<EOF
+ SELECT timescaledb_post_restore();
+EOF

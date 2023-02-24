@@ -1,0 +1,4 @@
+#!/bin/bash --login
+set -e
+
+pg_dump -Fc -f /backup.pg tsdb
