@@ -3,7 +3,7 @@
 #rom 2.7.2 then Timescale cloud is on 2.8.1.
 ARG TS_IMAGE_A=timescale/timescaledb:2.8.1-pg14
 # ARG TS_IMAGE_B=timescale/timescaledb:2.7.2-pg14
-ARG TS_IMAGE_B=timescale/timescaledb:2.9.1-pg14
+ARG TS_IMAGE_B=timescale/timescaledb:2.9.3-pg14
 FROM ${TS_IMAGE_A} AS A
 ADD https://github.com/ufoscout/docker-compose-wait/releases/download/2.9.0/wait /wait
 RUN chmod +x /wait
@@ -40,4 +40,4 @@ RUN /with_postgres psql -a -v ON_ERROR_STOP=1 tsdb -c 'alter extension timescale
 # COPY run_q1 /
 # RUN /with_postgres /run_q1
 
-CMD [ "/with_postgres", "psql" ,"tsdb"]
+CMD [ "/with_postgres", "bash"]

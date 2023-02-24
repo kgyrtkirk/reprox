@@ -31,8 +31,8 @@ CREATE TABLE compressed(time timestamptz, device int, temp float);
 -- Replicate twice to see that compress_chunk compresses all replica chunks
 SELECT create_distributed_hypertable('compressed', 'time', 'device', replication_factor => 2);
 INSERT INTO compressed SELECT t, (abs(timestamp_hash(t::timestamp)) % 10) + 1, random()*80
-FROM generate_series('2018-03-02 1:00'::TIMESTAMPTZ, '2018-03-04 1:00', '1 hour') t;
-ALTER TABLE compressed SET (timescaledb.compress, timescaledb.compress_segmentby='device', timescaledb.compress_orderby = 'time DESC');
+FROM generate_series('2018-03-02 1:00'::TIMESTAMPTZ, '2018-03-04 1:00', '1 seconds') t;
+-- ALTER TABLE compressed SET (timescaledb.compress, timescaledb.compress_segmentby='device', timescaledb.compress_orderby = 'time DESC');
 
 -- drop table if EXISTS c1;
 -- drop table if EXISTS conditions;
@@ -48,6 +48,16 @@ ALTER TABLE compressed SET (timescaledb.compress, timescaledb.compress_segmentby
 
 
 CREATE MATERIALIZED VIEW hca_hourly WITH (timescaledb.continuous) AS
+  SELECT
+    device,
+    time_bucket('1 hour', time) AS ts,
+    SUM(temp) AS value
+  FROM compressed
+  GROUP BY 1, 2
+;
+
+
+CREATE MATERIALIZED VIEW hca_hourly2 WITH (timescaledb.continuous) AS
   SELECT
     device,
     time_bucket('1 hour', time) AS ts,
