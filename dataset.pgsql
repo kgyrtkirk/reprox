@@ -46,3 +46,13 @@ ALTER TABLE compressed SET (timescaledb.compress, timescaledb.compress_segmentby
 --     0.25;
 -- create table c1 as select * from conditions where t BETWEEN '2022-01-04 1:00:00-00' and '2022-01-04 11:00:00-00';
 
+
+CREATE MATERIALIZED VIEW hca_hourly WITH (timescaledb.continuous) AS
+  SELECT
+    device,
+    time_bucket('1 hour', time) AS ts,
+    SUM(temp) AS value
+  FROM compressed
+  GROUP BY 1, 2
+;
+
