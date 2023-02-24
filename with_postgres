@@ -1,0 +1,38 @@
+#!/bin/bash --login
+
+set -e
+
+export PGDATA=/data
+[ -d $PGDATA ] && s=0 || s=1
+mkdir -p $PGDATA
+# ls -l /data
+/usr/local/bin/docker-entrypoint.sh postgres &
+POSTGRES_PID=$!
+WAIT_HOSTS=localhost:5432 /wait
+
+export PGUSER=postgres
+
+if [ "$s" == "1" ] ; then
+echo "@ SETTING CONFIG"
+cat >> $PGDATA/postgresql.conf << EOF
+    max_prepared_transactions=100
+EOF
+
+cat >> $PGDATA/pg_hba.conf << EOF
+    host all all 0.0.0.0/0 trust
+EOF
+createdb tsdb
+createuser dev
+
+fi
+
+echo "@ invoking $@"
+"$@"
+
+echo "@ shutting down postgres"
+kill "$POSTGRES_PID"
+while ps "$POSTGRES_PID" ; do
+    echo "..waitfor:$POSTGRES_PID"
+    sleep 1
+done
+
