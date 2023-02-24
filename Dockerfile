@@ -39,7 +39,7 @@ RUN chown postgres /data
 USER postgres
 RUN id && ls -la /data
 COPY with_postgres /
-RUN /with_postgres psql -a -v ON_ERROR_STOP=1 tsdb -c 'alter extension timescaledb update'
+RUN /with_postgres psql -a -v ON_ERROR_STOP=1 tsdb_1 -c 'alter extension timescaledb update'
 
 #COPY restore_dump /
 #RUN /with_postgres /restore_dump
