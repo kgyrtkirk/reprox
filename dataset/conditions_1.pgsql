@@ -1,8 +1,8 @@
--- ~40M rows
--- 3.6G
--- 365 chunks   ~86400
--- 3 chunk      ~1M rows
--- 1 chunk      ~8.6M rows
+-- ~4M rows
+-- 360M
+-- 365 chunks   ~8640
+-- 3 chunk      ~100k rows
+-- 1 chunk      ~860k rows
 --
 
 CREATE TABLE conditions (
@@ -14,17 +14,17 @@ SELECT create_hypertable('conditions', 't', chunk_time_interval => INTERVAL '1 d
 
 INSERT INTO conditions (t, temperature)
 SELECT
-    generate_series('2022-01-01 00:00:00-00'::timestamptz, '2022-12-31 23:59:59-00'::timestamptz, '1 second'),
+    generate_series('2022-01-01 00:00:00-00'::timestamptz, '2022-12-31 23:59:59-00'::timestamptz, '10 second'),
     0.25;
 
 INSERT INTO conditions (t, temperature)
 SELECT
-    generate_series('2022-01-01 00:00:00-00'::timestamptz, '2022-01-31 23:59:59-00'::timestamptz, '100 ms'),
+    generate_series('2022-01-01 00:00:00-00'::timestamptz, '2022-01-31 23:59:59-00'::timestamptz, '1000 ms'),
     0.25;
 
 INSERT INTO conditions (t, temperature)
 SELECT
-    generate_series('2022-01-01 00:00:00-00'::timestamptz, '2022-01-03 23:59:59-00'::timestamptz, '10 ms'),
+    generate_series('2022-01-01 00:00:00-00'::timestamptz, '2022-01-03 23:59:59-00'::timestamptz, '100 ms'),
     0.25;
 
 ALTER TABLE conditions SET (timescaledb.compress);

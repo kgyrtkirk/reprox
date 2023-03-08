@@ -8,8 +8,8 @@ ENV POSTGRES_PASSWORD=test
 COPY with_postgres /
 # initialize db
 RUN /with_postgres psql -a -v ON_ERROR_STOP=1 -c 'select 1'
-RUN git clone -b segfault-1 https://github.com/kgyrtkirk/comp-test 
+RUN git clone -b sample-test-1 https://github.com/kgyrtkirk/comp-test 
 WORKDIR /comp-test
-RUN /with_postgres psql -a -v ON_ERROR_STOP=1 -v test=segfault.sql -f runner/test_runner.sql
+RUN /with_postgres psql -a -v ON_ERROR_STOP=1 -v test=sample_pass.sql -f runner/test_runner.sql
 
 CMD [ "/with_postgres", "bash"]
