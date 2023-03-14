@@ -1,0 +1,9 @@
+#!/bin/bash
+
+set -e
+
+createuser x1
+createdb x1 -O x1
+psql x1 -c 'drop extension timescaledb' 
+psql x1 -U x1 -c 'create extension timescaledb'
+pg_dump -U x1 x1
