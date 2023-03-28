@@ -41,10 +41,11 @@ EOF
 
 psql -a -v ON_ERROR_STOP=1 tsdb -f c.sql
 
-(sleep 10 ; psql -a -v ON_ERROR_STOP=1 tsdb -c 'ALTER EXTENSION timescaledb UPDATE;') &
+(sleep 5 ; psql -a -v ON_ERROR_STOP=1 tsdb -c 'ALTER EXTENSION timescaledb UPDATE;') &
 
 psql -a -v ON_ERROR_STOP=1 tsdb -f <(
 
+cat q.sql
 echo "select 'client with old version waiting...';"
 sleep 15
 cat q.sql
