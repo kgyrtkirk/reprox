@@ -1,0 +1,56 @@
+#!/bin/bash
+
+set -e
+
+cat > q.sql << EOF
+SELECT 
+    time_bucket('1 MONTH', measures.measure_date) AS measure_day,
+    AVG(measures."value") AS average,
+    count(*) AS nb
+FROM measures
+INNER JOIN meter ON meter.id = measures.meter_id
+WHERE meter.id = '1134567' AND measures.measure_date > '2023-01-05' AND measures.measure_date < '2023-02-25' 
+GROUP BY measure_day;
+
+SELECT measures.*
+FROM measures
+INNER JOIN meter ON meter.id = measures.meter_id
+WHERE meter.id = '1134567' AND (measures.measure_date <= '2023-01-05' OR measures.measure_date >= '2023-02-25')
+ORDER BY measure_date DESC;
+EOF
+
+BODY='$BODY'
+cat > c.sql << EOF
+
+DO
+$BODY$
+    DECLARE
+        job_id  INT;
+    BEGIN
+        SELECT job.id INTO job_id
+        FROM _timescaledb_config.bgw_job job
+        INNER JOIN _timescaledb_catalog.hypertable hypertable ON hypertable.id = job.hypertable_id
+        WHERE hypertable.table_name = 'measures';
+
+        PERFORM alter_job(job_id, next_start=> current_timestamp);
+    END;
+$BODY$;
+
+EOF
+
+
+psql -a -v ON_ERROR_STOP=1 tsdb -f c.sql
+
+(sleep 10 ; psql -a -v ON_ERROR_STOP=1 tsdb -c 'ALTER EXTENSION timescaledb UPDATE;') &
+
+psql -a -v ON_ERROR_STOP=1 tsdb -f <(
+
+echo "select 'client with old version waiting...';"
+sleep 15
+cat q.sql
+
+)
+
+
+echo no-luck!
+exit 11;

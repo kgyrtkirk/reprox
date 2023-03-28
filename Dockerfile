@@ -16,6 +16,7 @@ COPY compress.pgsql /
 RUN /with_postgres psql -a -v ON_ERROR_STOP=1 tsdb -f compress.pgsql
 COPY load2.pgsql /
 RUN /with_postgres psql -a -v ON_ERROR_STOP=1 tsdb -f load2.pgsql
-RUN /with_postgres psql -a -v ON_ERROR_STOP=1 tsdb -f compress.pgsql
+COPY repro /
+RUN /with_postgres /repro
 
 CMD [ "/with_postgres", "bash"]
