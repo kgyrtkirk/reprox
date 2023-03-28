@@ -22,7 +22,10 @@ cat >> $PGDATA/pg_hba.conf << EOF
     host all all 0.0.0.0/0 trust
 EOF
 createdb tsdb
-createuser dev
+createuser dev 
+
+psql -a -v ON_ERROR_STOP=1 tsdb -c 'drop extension timescaledb cascade;'
+psql -a -v ON_ERROR_STOP=1 tsdb -c "CREATE EXTENSION timescaledb VERSION '2.9.3';"
 
 fi
 
