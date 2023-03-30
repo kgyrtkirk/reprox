@@ -3,8 +3,9 @@
 set -e
 
 export PGDATA=/data
-[ -d $PGDATA ] && s=0 || s=1
+[ -f $PGDATA/postgresql.conf ] && s=0 || s=1
 mkdir -p $PGDATA
+echo "S: $s"
 # ls -l /data
 /usr/local/bin/docker-entrypoint.sh postgres &
 POSTGRES_PID=$!
