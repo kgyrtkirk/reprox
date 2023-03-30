@@ -2,8 +2,9 @@ createuser -s myUser2
 cat > a.sql << EOF
 create table aa as select now() as t, 1 as value;
 select create_hypertable('aa','t',migrate_data=>true);
+ALTER TABLE aa SET (timescaledb.compress);
 SELECT add_compression_policy('aa',INTERVAL '1 days');
-select * timescaledb_information.jobs;
+select * from timescaledb_information.jobs;
 EOF
 
 psql -a -v ON_ERROR_STOP=1 -U myUser2 tsdb -f a.sql
