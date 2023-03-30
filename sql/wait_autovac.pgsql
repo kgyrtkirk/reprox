@@ -5,7 +5,7 @@ $$
         n  INT;
         wait int;
     BEGIN
-        wait=5;
+        wait=15;
         loop
             select count(1) into n from pg_stat_activity where backend_type = 'autovacuum worker';
             rollback;
