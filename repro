@@ -1,11 +1,31 @@
+#!/bin/bash
+set -e
+
 createuser -s myUser2
+createuser -s '"myUser3"'
 cat > a.sql << EOF
 create table aa as select now() as t, 1 as value;
 select create_hypertable('aa','t',migrate_data=>true);
 ALTER TABLE aa SET (timescaledb.compress);
 SELECT add_compression_policy('aa',INTERVAL '1 days');
+select * from timescaledb_information.job_stats;
 select * from timescaledb_information.jobs;
+select * from timescaledb_information.job_stats;
+
+select  alter_job( 1000, next_start=>now() + interval '3 seconds');
+alter table aa owner to "myUser2";
+\d _timescaledb_config.bgw_job;
+
 EOF
 
-psql -a -v ON_ERROR_STOP=1 -U myUser2 tsdb -f a.sql
+psql -a -v ON_ERROR_STOP=1 -U '"myUser3"' tsdb -f a.sql
+dropuser '"myUser3"'
+sleep 5
+psql -a -v ON_ERROR_STOP=1 -U myUser2 tsdb -c 'select * from timescaledb_information.jobs;'
+psql -a -v ON_ERROR_STOP=1 -U myUser2 tsdb -c 'select * from timescaledb_information.job_stats;'
+#psql -a -v ON_ERROR_STOP=1 -U myUser2 tsdb -c 'select  alter_job( 1000, next_start=>now());'
+exit 1
+
+
+
 
