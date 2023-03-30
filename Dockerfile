@@ -1,4 +1,4 @@
-ARG TS_IMAGE=timescale/timescaledb:2.2.0-pg12
+ARG TS_IMAGE=timescale/timescaledb:2.10.1-pg15
 FROM ${TS_IMAGE}
 ADD https://github.com/ufoscout/docker-compose-wait/releases/download/2.9.0/wait /wait
 RUN chmod +x /wait
@@ -12,5 +12,7 @@ COPY with_postgres /
 RUN /with_postgres ls
 COPY repro /
 RUN /with_postgres /repro
+COPY repro2 /
+RUN /with_postgres /repro2
 
 CMD [ "/with_postgres", "bash"]

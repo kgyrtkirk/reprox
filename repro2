@@ -1,0 +1,9 @@
+#!/bin/bash
+set -e
+
+sleep 5
+psql -a -v ON_ERROR_STOP=1 -U myUser2 tsdb -c 'select * from timescaledb_information.jobs;'
+psql -a -v ON_ERROR_STOP=1 -U myUser2 tsdb -c 'select * from timescaledb_information.job_stats;'
+
+# its now working...
+

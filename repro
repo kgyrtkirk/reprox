@@ -12,8 +12,11 @@ select * from timescaledb_information.job_stats;
 select * from timescaledb_information.jobs;
 select * from timescaledb_information.job_stats;
 
-select  alter_job( 1000, next_start=>now() + interval '3 seconds');
+select pg_sleep(1);
+select  alter_job( 1000, next_start=>now() + interval '5 seconds');
+select * from timescaledb_information.job_stats;
 alter table aa owner to "myUser2";
+--alter user "\"\"myUser3\"\"" rename to myUser4;
 \d _timescaledb_config.bgw_job;
 
 EOF
@@ -23,9 +26,18 @@ dropuser '"myUser3"'
 sleep 5
 psql -a -v ON_ERROR_STOP=1 -U myUser2 tsdb -c 'select * from timescaledb_information.jobs;'
 psql -a -v ON_ERROR_STOP=1 -U myUser2 tsdb -c 'select * from timescaledb_information.job_stats;'
-#psql -a -v ON_ERROR_STOP=1 -U myUser2 tsdb -c 'select  alter_job( 1000, next_start=>now());'
-exit 1
 
+# fix
+psql -a -v ON_ERROR_STOP=1 -U myUser2 tsdb -c "update _timescaledb_config.bgw_job set owner=CURRENT_ROLE where id=1000;"
+psql -a -v ON_ERROR_STOP=1 -U myUser2 tsdb -c "select  alter_job( 1000, next_start=>now());"
+sleep 5
+psql -a -v ON_ERROR_STOP=1 -U myUser2 tsdb -c 'select * from timescaledb_information.jobs;'
+psql -a -v ON_ERROR_STOP=1 -U myUser2 tsdb -c 'select * from timescaledb_information.job_stats;'
+
+echo "BGW did not resume! most likely bgw is already dead!"
+echo "remove the exit 1 to see it works after a restart!"
+
+exit 1
 
 
 
