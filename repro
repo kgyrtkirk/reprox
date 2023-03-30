@@ -8,6 +8,7 @@ create table aa as select now() as t, 1 as value;
 select create_hypertable('aa','t',migrate_data=>true);
 ALTER TABLE aa SET (timescaledb.compress);
 SELECT add_compression_policy('aa',INTERVAL '1 days');
+
 select * from timescaledb_information.job_stats;
 select * from timescaledb_information.jobs;
 select * from timescaledb_information.job_stats;
@@ -21,6 +22,14 @@ alter table aa owner to "myUser2";
 
 EOF
 
+cat > b.sql <<EOF
+create table aa2 as select now() as t, 1 as value;
+select create_hypertable('aa2','t',migrate_data=>true);
+ALTER TABLE aa2 SET (timescaledb.compress);
+SELECT add_compression_policy('aa2',INTERVAL '1 days');
+EOF
+
+psql -a -v ON_ERROR_STOP=1 -U myUser2 tsdb -f b.sql
 psql -a -v ON_ERROR_STOP=1 -U '"myUser3"' tsdb -f a.sql
 dropuser '"myUser3"'
 sleep 5
@@ -28,8 +37,9 @@ psql -a -v ON_ERROR_STOP=1 -U myUser2 tsdb -c 'select * from timescaledb_informa
 psql -a -v ON_ERROR_STOP=1 -U myUser2 tsdb -c 'select * from timescaledb_information.job_stats;'
 
 # fix
-psql -a -v ON_ERROR_STOP=1 -U myUser2 tsdb -c "update _timescaledb_config.bgw_job set owner=CURRENT_ROLE where id=1000;"
+psql -a -v ON_ERROR_STOP=1 -U myUser2 tsdb -c "update _timescaledb_config.bgw_job set owner=CURRENT_ROLE where id=1001;"
 psql -a -v ON_ERROR_STOP=1 -U myUser2 tsdb -c "select  alter_job( 1000, next_start=>now());"
+psql -a -v ON_ERROR_STOP=1 -U myUser2 tsdb -c "select  alter_job( 1001, next_start=>now());"
 sleep 5
 psql -a -v ON_ERROR_STOP=1 -U myUser2 tsdb -c 'select * from timescaledb_information.jobs;'
 psql -a -v ON_ERROR_STOP=1 -U myUser2 tsdb -c 'select * from timescaledb_information.job_stats;'
