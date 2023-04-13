@@ -24,6 +24,8 @@ insert into main_table select * from stage2 s
      where md5(s||'xaaa') < '22'  and md5(s||'xaaa') > '21';-- limit 1 offset 3;
 select count(1) from main_table;
 
+select time,device_id,count(1) from main_table where time='2016-11-23 11:29:30.000006+00' group by time,device_id;
+
 select 'unexpected unique failure during decompression';
 
 select decompress_chunk(show_chunks('main_table'),true);
