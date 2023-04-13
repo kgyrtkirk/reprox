@@ -24,7 +24,30 @@ insert into main_table select * from stage2 s
      where md5(s||'xaaa') < '22'  and md5(s||'xaaa') > '21';-- limit 1 offset 3;
 select count(1) from main_table;
 
-select time,device_id,count(1) from main_table where time='2016-11-23 11:29:30.000006+00' group by time,device_id;
+
+select time,device_id,tableoid::regclass::text,count(1) from main_table where
+     time='2016-11-23 11:29:30.000006+00'
+    and device_id='demo000113'
+      group by time,device_id,tableoid::regclass::text;
+ 
+
+select tableoid::regclass::text as chunk from main_table where
+     time='2016-11-23 11:29:30.000006+00'
+    and device_id='demo000113'
+      group by time,device_id,tableoid::regclass::text \gset
+
+select :'chunk';
+select * from _timescaledb_catalog.chunk where schema_name ||'.'||table_name = :'chunk';
+-- compress_hyper_285_5719_chunk
+select cc.table_name as c_chunk
+    from _timescaledb_catalog.chunk c
+    join _timescaledb_catalog.chunk cc on (cc.id=c.compressed_chunk_id)
+    where c.table_name = :'chunk' \gset
+
+set search_path = public, _timescaledb_internal;
+
+select * from :c_chunk where device_id = 'demo000113';
+select * from :chunk where device_id = 'demo000113';
 
 select 'unexpected unique failure during decompression';
 
