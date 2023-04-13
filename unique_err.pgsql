@@ -42,9 +42,10 @@ select * from _timescaledb_catalog.chunk where schema_name ||'.'||table_name = :
 select cc.table_name as c_chunk
     from _timescaledb_catalog.chunk c
     join _timescaledb_catalog.chunk cc on (cc.id=c.compressed_chunk_id)
-    where c.table_name = :'chunk' \gset
+    where c.schema_name ||'.'||c.table_name = :'chunk' \gset
 
 set search_path = public, _timescaledb_internal;
+
 
 select * from :c_chunk where device_id = 'demo000113';
 select * from :chunk where device_id = 'demo000113';
