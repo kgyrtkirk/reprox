@@ -20,6 +20,7 @@ insert into main_table select * from stage2 s
      where md5(s||'xaaa') < '22'  and md5(s||'xaaa') > '21' limit 1 offset 3;
 \set ON_ERROR_STOP 1
 
+-- but with the right company - it can get in !
 insert into main_table select * from stage2 s
      where md5(s||'xaaa') < '22'  and md5(s||'xaaa') > '21';-- limit 1 offset 3;
 select count(1) from main_table;
@@ -47,8 +48,12 @@ select cc.table_name as c_chunk
 set search_path = public, _timescaledb_internal;
 
 
-select * from :c_chunk where device_id = 'demo000113';
+-- we have 2 records
 select * from :chunk where device_id = 'demo000113';
+-- 1 lives in compressed; see _ts_meta_max1
+select * from only :c_chunk where device_id = 'demo000113';
+-- 1 in decompressed form
+select * from only :chunk where device_id = 'demo000113';
 
 select 'unexpected unique failure during decompression';
 
