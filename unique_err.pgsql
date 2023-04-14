@@ -8,7 +8,7 @@ SELECT create_hypertable('main_table', 'time', chunk_time_interval => interval '
 
 ALTER TABLE main_table SET (
             timescaledb.compress,
-            timescaledb.compress_segmentby = 'battery_temperature,bssid,cpu_avg_5min,device_id',
+            timescaledb.compress_segmentby = 'device_id',
             timescaledb.compress_orderby = '')
 ;
 select compress_chunk(show_chunks('main_table'));
@@ -19,6 +19,9 @@ select compress_chunk(show_chunks('main_table'));
 insert into main_table select * from stage2 s
      where md5(s||'xaaa') < '22'  and md5(s||'xaaa') > '21' limit 1 offset 3;
 \set ON_ERROR_STOP 1
+
+explain insert into main_table select * from stage2 s
+     where md5(s||'xaaa') < '22'  and md5(s||'xaaa') > '21';-- limit 1 offset 3;
 
 -- but with the right company - it can get in !
 insert into main_table select * from stage2 s
