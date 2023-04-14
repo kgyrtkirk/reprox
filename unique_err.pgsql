@@ -26,10 +26,10 @@ insert into main_table select * from iii offset 1;
 \set ON_ERROR_STOP 1
 
 
-explain insert into main_table select * from iii;-- limit 1 offset 3;
-
 -- but with the right company - it can get in !
-insert into main_table select * from iii  ;-- limit 1 offset 3;
+explain insert into main_table select * from iii;
+
+insert into main_table select * from iii  ;
 select count(1) from main_table;
 
 
