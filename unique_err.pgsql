@@ -15,21 +15,21 @@ ALTER TABLE main_table SET (
 ;
 select compress_chunk(show_chunks('main_table'));
 
+drop table if exists iii;
+create table iii as select * from stage2 s
+     where md5(s||'xaaa') < '22'  and md5(s||'xaaa') > '21' limit 2 offset 2;
+
 
 -- detected correctly when only 1 row is inserted
 \set ON_ERROR_STOP 0
-insert into main_table select * from stage2 s
-     where md5(s||'xaaa') < '22'  and md5(s||'xaaa') > '21' limit 1 offset 3;
+insert into main_table select * from iii offset 1;
 \set ON_ERROR_STOP 1
 
-drop table if exists iii;
-create table iii as select * from stage2 s
-     where md5(s||'xaaa') < '22'  and md5(s||'xaaa') > '21';
 
 explain insert into main_table select * from iii;-- limit 1 offset 3;
 
 -- but with the right company - it can get in !
-insert into main_table select * from iii;-- limit 1 offset 3;
+insert into main_table select * from iii  ;-- limit 1 offset 3;
 select count(1) from main_table;
 
 
