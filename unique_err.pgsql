@@ -16,9 +16,16 @@ ALTER TABLE main_table SET (
 ;
 select compress_chunk(show_chunks('main_table'));
 
-create table iii as select * from stage2 s
-     where md5(s||'xaaa') < '22'  and md5(s||'xaaa') > '21' order by time limit 2;
+--create table iii as select * from stage2 s
+--     where md5(s||'xaaa') < '22'  and md5(s||'xaaa') > '21' order by time limit 2;
 
+create table iii as select * from stage2 s
+    where
+        (time,device_id) in (
+            ('2016-11-23 07:42:00.000006+00','demo000057'),
+            ('2016-11-23 11:29:30.000006+00','demo000113')
+        )
+    order by time;
 
 select i.row_number,i.time,i.device_id,m.tableoid::regclass::text
     from (select row_number() over (),* from iii) i
