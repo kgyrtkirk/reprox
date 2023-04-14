@@ -3,6 +3,7 @@
 set search_path = public, _timescaledb_internal;
 
 drop table if exists main_table;
+drop table if exists iii;
 
 create table main_table as select * from stage1 s where md5(s||'xaaa') < '8';
 create unique index xm on main_table(time,device_id);
@@ -15,16 +16,16 @@ ALTER TABLE main_table SET (
 ;
 select compress_chunk(show_chunks('main_table'));
 
-drop table if exists iii;
 create table iii as select * from stage2 s
      where md5(s||'xaaa') < '22'  and md5(s||'xaaa') > '21' limit 2 offset 2;
 
+
+select row_number() over (),i.time,i.device_id,m.tableoid::regclass::text from iii i left join main_table m on (m.device_id=i.device_id and m.time=i.time) ;
 
 -- detected correctly when only 1 row is inserted
 \set ON_ERROR_STOP 0
 insert into main_table select * from iii offset 1;
 \set ON_ERROR_STOP 1
-
 
 -- but with the right company - it can get in !
 explain insert into main_table select * from iii;
