@@ -1,4 +1,6 @@
 
+\d values
+\d _timescaledb_internal._hyper_1_1_chunk
 \d _timescaledb_internal.compress_hyper_2_2_chunk
 
 -- Execution with Timescale 2.7.2: BitmapAnd with both indices are used
