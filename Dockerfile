@@ -11,5 +11,7 @@ COPY dataset/conditions_1.pgsql /
 RUN /with_postgres psql -a -v ON_ERROR_STOP=1 tsdb -f conditions_1.pgsql
 COPY repro.pgsql /
 RUN /with_postgres psql -a -v ON_ERROR_STOP=1 tsdb -f repro.pgsql
+COPY r2.pgsql /
+RUN /with_postgres psql -a -v ON_ERROR_STOP=1 tsdb -f r2.pgsql
 
 CMD [ "/with_postgres", "bash"]

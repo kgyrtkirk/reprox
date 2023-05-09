@@ -1,4 +1,4 @@
-SELECT add_compression_policy('conditions', INTERVAL '12 hours');
+SELECT add_compression_policy('conditions', INTERVAL '1 week');
 
 SELECT * FROM timescaledb_information.jobs WHERE proc_name='policy_compression';
 SELECT next_start FROM timescaledb_information.jobs WHERE proc_name='policy_compression';
