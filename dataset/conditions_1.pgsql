@@ -14,13 +14,9 @@ SELECT create_hypertable('conditions', 't', chunk_time_interval => INTERVAL '1 d
 
 INSERT INTO conditions (t, temperature)
 SELECT
-    generate_series('2022-01-01 00:00:00-00'::timestamptz, '2022-12-31 23:59:59-00'::timestamptz, '10 second'),
-    0.25;
-
-INSERT INTO conditions (t, temperature)
-SELECT
     generate_series('2022-01-01 00:00:00-00'::timestamptz, '2022-01-31 23:59:59-00'::timestamptz, '1000 ms'),
-    0.25;
+    0.25
+limit 0;
 
 INSERT INTO conditions (t, temperature)
 SELECT
